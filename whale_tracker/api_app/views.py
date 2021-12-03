@@ -14,8 +14,12 @@ from time import time
 
 class TransactionViews(APIView):
     def delete(self, request, id=None):
-        item = get_object_or_404(TransactionModel, id=id)
-        item.delete()
+        if id is not None:
+            item = TransactionModel.objects.get(id=id)
+            item.delete()
+        else:
+            entries = TransactionModel.objects.all()
+            entries.delete()
         return Response({"status": "success", "data": "Item Deleted"})
 
     def patch(self, request, id=None):
@@ -64,19 +68,14 @@ class TransactionViews(APIView):
             return None
 
     def save_whale_data(self):
-        
-        # [{"blockchain": "test new one", "symbol": "1",
-        #             "transaction_type": "2", "hash": "2"}]
         print('save')
         whale_data = self._get_whale_data()
         newData = whale_data["transactions"]
-        print("weather_data")
         if newData is not None:
             for newEl in newData:
                 try:
-                    print('newel', newEl)
                     weather_object = TransactionModel.objects.create(
-                        blockchain=newEl["blockchain"], symbol=newEl["symbol"], transaction_type=newEl["transaction_type"], hash=newEl["hash"])
+                        blockchain=newEl["blockchain"], symbol=newEl["symbol"], transaction_type=newEl["transaction_type"], hash=newEl["hash"], from_source=newEl["from"], to_source=newEl["to"], timestamp=newEl["timestamp"], amount=newEl["amount"], amount_usd=newEl["amount_usd"], transaction_count=newEl["transaction_count"])
                     whale_data.save()
                 except:
                     pass
