@@ -17,6 +17,7 @@ class TransactionViews(APIView):
         if id is not None:
             item = TransactionModel.objects.get(id=id)
             item.delete()
+
         else:
             entries = TransactionModel.objects.all()
             entries.delete()
